@@ -13,6 +13,8 @@ services:
       - CHROMA_PORT=8000
     depends_on:
       - chromadb
+    volumes:
+      - .:/app
     restart: unless-stopped
 
   chromadb:

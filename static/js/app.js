@@ -1,7 +1,7 @@
-/
-  * OWASP Juice Shop - Client Application JS(Indian Localization & Payment Portal)
-    * Handles Indian INR Pricing(₹), UPI / QR(GPay, PhonePe, Paytm), RuPay Cards, NetBanking, and Auth
-      */
+/**
+ * OWASP Juice Shop - Client Application JS (Indian Localization & Payment Portal)
+ * Handles Indian INR Pricing (₹), UPI / QR (GPay, PhonePe, Paytm), RuPay Cards, NetBanking, and Auth
+ */
 
 const API_BASE = '/api';
 
