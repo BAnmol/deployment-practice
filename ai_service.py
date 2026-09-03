@@ -41,12 +41,16 @@ def build_catalog_context(db: Session) -> str:
 
     catalog_lines.append("\n=== ACTIVE DISCOUNT PROMO COUPONS ===")
     for c in coupons:
-        catalog_lines.append(f"• Code '{c.code}': {c.discount_percent}% OFF (Max Discount: ₹{c.max_discount:.0f})")
+        catalog_lines.append(
+            f"• Code '{c.code}': {c.discount_percent}% OFF (Max Discount: ₹{c.max_discount:.0f})"
+        )
 
     catalog_lines.append("\n=== PAYMENT METHODS SUPPORTED ===")
     catalog_lines.append("• UPI & QR (Google Pay, PhonePe, Paytm, BHIM, Cred)")
     catalog_lines.append("• RuPay Platinum Debit / Credit Cards (Instant 3D secure)")
-    catalog_lines.append("• NetBanking (SBI, HDFC Bank, ICICI Bank, Axis Bank, Kotak, PNB)")
+    catalog_lines.append(
+        "• NetBanking (SBI, HDFC Bank, ICICI Bank, Axis Bank, Kotak, PNB)"
+    )
     catalog_lines.append("• Cash on Delivery (COD) / Scan on delivery")
 
     return "\n".join(catalog_lines)
@@ -68,28 +72,36 @@ Keep answers concise, helpful, informative, and engaging. Never invent fake prod
 """
 
 
-def extract_recommended_products(reply_text: str, all_products: List[models.Product]) -> List[Dict[str, Any]]:
+def extract_recommended_products(
+    reply_text: str, all_products: List[models.Product]
+) -> List[Dict[str, Any]]:
     """Identifies products mentioned in AI response to render interactive cards."""
     recommended = []
     reply_lower = reply_text.lower()
-    
+
     for p in all_products:
         name_lower = p.name.lower()
         # Check if product name or key phrase appears in reply
-        simple_name = name_lower.split('(')[0].strip()
-        if simple_name in reply_lower or f"id: {p.id}" in reply_lower or p.name.lower() in reply_lower:
+        simple_name = name_lower.split("(")[0].strip()
+        if (
+            simple_name in reply_lower
+            or f"id: {p.id}" in reply_lower
+            or p.name.lower() in reply_lower
+        ):
             mrp = p.original_price if p.original_price else round(p.price * 1.25)
-            recommended.append({
-                "id": p.id,
-                "name": p.name,
-                "price": p.price,
-                "original_price": mrp,
-                "category": p.category,
-                "image_url": p.image_url,
-                "rating": p.rating,
-                "origin": p.origin,
-                "stock": p.stock
-            })
+            recommended.append(
+                {
+                    "id": p.id,
+                    "name": p.name,
+                    "price": p.price,
+                    "original_price": mrp,
+                    "category": p.category,
+                    "image_url": p.image_url,
+                    "rating": p.rating,
+                    "origin": p.origin,
+                    "stock": p.stock,
+                }
+            )
             if len(recommended) >= 3:
                 break
     return recommended
@@ -98,7 +110,7 @@ def extract_recommended_products(reply_text: str, all_products: List[models.Prod
 async def ask_ai_assistant(
     messages: List[Dict[str, str]],
     db: Session,
-    current_product_id: Optional[int] = None
+    current_product_id: Optional[int] = None,
 ) -> Dict[str, Any]:
     """Interacts with OpenRouter API with dynamic SQLite catalog grounding."""
     catalog_text = build_catalog_context(db)
@@ -108,25 +120,28 @@ async def ask_ai_assistant(
 
     # If current_product_id is supplied, prepend context
     augmented_messages = [{"role": "system", "content": system_prompt}]
-    
+
     if current_product_id:
-        current_prod = db.query(models.Product).filter(models.Product.id == current_product_id).first()
+        current_prod = (
+            db.query(models.Product)
+            .filter(models.Product.id == current_product_id)
+            .first()
+        )
         if current_prod:
-            augmented_messages.append({
-                "role": "system",
-                "content": f"Note: The customer is currently viewing Product #{current_prod.id}: '{current_prod.name}' priced at ₹{current_prod.price}."
-            })
+            augmented_messages.append(
+                {
+                    "role": "system",
+                    "content": f"Note: The customer is currently viewing Product #{current_prod.id}: '{current_prod.name}' priced at ₹{current_prod.price}.",
+                }
+            )
 
     for m in messages:
         if m.get("role") in ("user", "assistant", "system") and m.get("content"):
-            augmented_messages.append({
-                "role": m["role"],
-                "content": m["content"]
-            })
+            augmented_messages.append({"role": m["role"], "content": m["content"]})
 
     # Prepare payload for OpenRouter
     api_key = os.getenv("OPENROUTER_API_KEY", OPENROUTER_API_KEY)
-    
+
     if not api_key:
         return get_offline_fallback(messages, all_products)
 
@@ -134,22 +149,24 @@ async def ask_ai_assistant(
         "Authorization": f"Bearer {api_key}",
         "HTTP-Referer": "http://localhost:8000",
         "X-Title": "Juice Shop AI Assistant",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
     }
 
     payload = {
         "model": DEFAULT_MODEL,
         "messages": augmented_messages,
         "temperature": 0.7,
-        "max_tokens": 800
+        "max_tokens": 800,
     }
 
     try:
         async with httpx.AsyncClient(timeout=25.0) as client:
             resp = await client.post(OPENROUTER_URL, headers=headers, json=payload)
-            
+
             if resp.status_code != 200:
-                logger.warning(f"OpenRouter returned {resp.status_code}: {resp.text}. Trying fallback model...")
+                logger.warning(
+                    f"OpenRouter returned {resp.status_code}: {resp.text}. Trying fallback model..."
+                )
                 payload["model"] = FALLBACK_MODEL
                 resp = await client.post(OPENROUTER_URL, headers=headers, json=payload)
 
@@ -157,19 +174,19 @@ async def ask_ai_assistant(
                 data = resp.json()
                 reply = data["choices"][0]["message"]["content"]
                 suggested_prods = extract_recommended_products(reply, all_products)
-                
+
                 # Contextual quick replies
                 quick_replies = [
                     "What are your best deals under ₹150?",
                     "Which juices are best for immunity?",
                     "What promo coupons can I apply?",
-                    "Tell me about Kashmiri Apple Juice"
+                    "Tell me about Kashmiri Apple Juice",
                 ]
 
                 return {
                     "reply": reply,
                     "suggested_products": suggested_prods,
-                    "quick_replies": quick_replies
+                    "quick_replies": quick_replies,
                 }
             else:
                 logger.error(f"OpenRouter Error: {resp.status_code} - {resp.text}")
@@ -180,37 +197,53 @@ async def ask_ai_assistant(
         return get_offline_fallback(messages, all_products)
 
 
-def get_offline_fallback(messages: List[Dict[str, str]], all_products: List[models.Product]) -> Dict[str, Any]:
+def get_offline_fallback(
+    messages: List[Dict[str, str]], all_products: List[models.Product]
+) -> Dict[str, Any]:
     """Smart localized fallback in case of OpenRouter network timeout or key issue."""
     user_query = messages[-1]["content"].lower() if messages else ""
 
-    if "cheap" in user_query or "price" in user_query or "under" in user_query or "cost" in user_query:
+    if (
+        "cheap" in user_query
+        or "price" in user_query
+        or "under" in user_query
+        or "cost" in user_query
+    ):
         sorted_prods = sorted(all_products, key=lambda x: x.price)
-        reply = "Here are our most budget-friendly authentic Indian juices under ₹150:\n\n"
+        reply = (
+            "Here are our most budget-friendly authentic Indian juices under ₹150:\n\n"
+        )
         for p in sorted_prods[:4]:
-            reply += f"• **{p.name}** – **₹{p.price:.0f}** (MRP ₹{p.original_price or round(p.price*1.25)}) • 📍 {p.origin}\n"
+            reply += f"• {p.name} – ₹{p.price:.0f} (MRP ₹{p.original_price or round(p.price*1.25)}) • 📍 {p.origin}\n"
         reply += "\n💡 *Tip: Use coupon code `DESI10` for an extra 10% discount at checkout!*"
         suggested = extract_recommended_products(reply, all_products)
-    elif "coupon" in user_query or "discount" in user_query or "offer" in user_query or "promo" in user_query:
+    elif (
+        "coupon" in user_query
+        or "discount" in user_query
+        or "offer" in user_query
+        or "promo" in user_query
+    ):
         reply = "Here are our active discount coupons for your order:\n\n"
-        reply += "• **`DESI10`** — **10% OFF** on any juice order\n"
-        reply += "• **`NAMASTE20`** — **20% OFF** on orders above ₹500 (Max ₹250)\n"
-        reply += "• **`INDIA50`** — **50% OFF** mega discount (Max ₹500)\n"
-        reply += "• **`FREESHIP`** — Free delivery discount across India\n\n"
+        reply += "• `DESI10` — 10% OFF on any juice order\n"
+        reply += "• `NAMASTE20` — 20% OFF on orders above ₹500 (Max ₹250)\n"
+        reply += "• `INDIA50` — 50% OFF mega discount (Max ₹500)\n"
+        reply += "• `FREESHIP` — Free delivery discount across India\n\n"
         reply += "Apply any of these codes directly in your shopping basket before paying with UPI or RuPay!"
         suggested = []
     elif "immunity" in user_query or "health" in user_query or "tulsi" in user_query:
         reply = "For maximum natural immunity and wellness, I recommend:\n\n"
-        reply += "1. **Fresh Tulsi & Basil Herbal Smoothie (₹199)** – Ayurvedic holy tulsi with fresh ginger extract.\n"
-        reply += "2. **Nagpur Fresh Orange Juice (₹149)** – Packed with 82mg pure natural Vitamin C (136% RDA).\n"
-        reply += "3. **Desi Delhi Gajar Carrot Juice (₹169)** – High in Beta-Carotene & Vitamin A.\n"
+        reply += "1. Fresh Tulsi & Basil Herbal Smoothie (₹199) – Ayurvedic holy tulsi with fresh ginger extract.\n"
+        reply += "2. Nagpur Fresh Orange Juice (₹149) – Packed with 82mg pure natural Vitamin C (136% RDA).\n"
+        reply += "3. Desi Delhi Gajar Carrot Juice (₹169) – High in Beta-Carotene & Vitamin A.\n"
         suggested = extract_recommended_products(reply, all_products)
     else:
-        reply = "Namaste! 🙏 I am **RasAI**, your smart Indian Juice Concierge.\n\n"
+        reply = "Namaste! 🙏 I am RasAI, your smart Indian Juice Concierge.\n\n"
         reply += "I can help you with:\n"
-        reply += "• **Juice Pricing & Discounts** (compare prices & find promo codes)\n"
-        reply += "• **Ingredients & Nutrition** (cold-pressed botanicals, calories, Vitamin C)\n"
-        reply += "• **Tailored Recommendations** (immunity boosters, workout recovery, sugar-free)\n\n"
+        reply += "• Juice Pricing & Discounts (compare prices & find promo codes)\n"
+        reply += (
+            "• Ingredients & Nutrition (cold-pressed botanicals, calories, Vitamin C)\n"
+        )
+        reply += "• Tailored Recommendations (immunity boosters, workout recovery, sugar-free)\n\n"
         reply += "What kind of fresh juice are you looking for today?"
         suggested = []
 
@@ -221,6 +254,6 @@ def get_offline_fallback(messages: List[Dict[str, str]], all_products: List[mode
             "What are your best deals under ₹150?",
             "Which juices are best for immunity?",
             "What promo coupons can I apply?",
-            "Tell me about Kashmiri Apple Juice"
-        ]
+            "Tell me about Kashmiri Apple Juice",
+        ],
     }

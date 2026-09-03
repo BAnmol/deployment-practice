@@ -1,7 +1,7 @@
-/**
- * OWASP Juice Shop - Client Application JS (Indian Localization & Payment Portal)
- * Handles Indian INR Pricing (₹), UPI / QR (GPay, PhonePe, Paytm), RuPay Cards, NetBanking, and Auth
- */
+/
+  * OWASP Juice Shop - Client Application JS(Indian Localization & Payment Portal)
+    * Handles Indian INR Pricing(₹), UPI / QR(GPay, PhonePe, Paytm), RuPay Cards, NetBanking, and Auth
+      */
 
 const API_BASE = '/api';
 
@@ -69,7 +69,7 @@ function showToast(message, type = 'info') {
 
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
-  
+
   let icon = '🍹';
   if (type === 'success') icon = '✅';
   if (type === 'error') icon = '❌';
@@ -202,7 +202,7 @@ async function fetchCategories() {
 function renderCategoryFilter() {
   const select = document.getElementById('category-filter-select');
   if (!select) return;
-  select.innerHTML = state.categories.map(cat => 
+  select.innerHTML = state.categories.map(cat =>
     `<option value="${cat}" ${state.activeCategory === cat ? 'selected' : ''}>${cat === 'All' ? 'All Categories' : cat}</option>`
   ).join('');
 }
@@ -246,7 +246,7 @@ function renderProductsGrid() {
   }
 
   grid.innerHTML = state.products.map(prod => {
-    const ribbonHtml = prod.ribbon_badge ? 
+    const ribbonHtml = prod.ribbon_badge ?
       `<div class="ribbon-badge">${prod.ribbon_badge}</div>` : '';
 
     return `
@@ -482,7 +482,7 @@ function renderProductDetailModal() {
       </div>
     `;
   }
- else if (activeProductTab === 'ingredients') {
+  else if (activeProductTab === 'ingredients') {
     tabBodyContent = `
       <div class="product-detail-layout">
         <div>
@@ -1233,7 +1233,7 @@ function renderCheckoutModal() {
   } else if (checkoutStep === 3) {
     // Step 3: Indian Payment Gateway (UPI, RuPay, NetBanking, COD)
     const grandTotal = Math.round(state.basket.total + state.checkoutData.delivery_fee);
-    
+
     let methodFormHtml = '';
 
     if (state.checkoutData.payment_method === 'UPI / QR') {
@@ -1871,7 +1871,7 @@ async function initAIChat() {
   // Render initial greeting
   const welcomeMsg = {
     role: 'assistant',
-    content: "Namaste! 🙏 I am **RasAI**, your live Indian Juice Specialist & Pricing Concierge.\n\nAsk me about:\n• **Juice Pricing & Best Value Deals** (e.g., drinks under ₹150)\n• **Ingredients & Farm Origins** (Kashmir, Ratnagiri, Wayanad)\n• **Active Promo Coupons** for checkout (`DESI10`, `INDIA50`)"
+    content: "Namaste! 🙏 I am RasAI, your live Indian Juice Specialist & Pricing Concierge.\n\nAsk me about:\n• Juice Pricing & Best Value Deals (e.g., drinks under ₹150)\n• Ingredients & Farm Origins (Kashmir, Ratnagiri, Wayanad)\n• Active Promo Coupons for checkout (`DESI10`, `INDIA50`)"
   };
   aiMessages = [welcomeMsg];
   renderAIMessagesList();
@@ -2032,7 +2032,7 @@ async function sendAIChatMessage() {
 
     aiMessages.push({
       role: 'assistant',
-      content: "Namaste! For immediate answers:\n• Cheapest juices: **Desi Shikanji (₹99)** & **Kerala Banana (₹129)**\n• Active discount coupon: **`DESI10`** for 10% OFF\n• 100% cold-pressed with zero preservatives!"
+      content: "Namaste! For immediate answers:\n• Cheapest juices: Desi Shikanji (₹99) & Kerala Banana (₹129)\n• Active discount coupon: `DESI10` for 10% OFF\n• 100% cold-pressed with zero preservatives!"
     });
     renderAIMessagesList();
   }
