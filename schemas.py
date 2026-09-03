@@ -163,3 +163,35 @@ class CouponResponse(BaseModel):
     discount_percent: float
     valid: bool
     message: str
+
+
+# ==========================================
+# AI Assistant Schemas
+# ==========================================
+class ChatMessage(BaseModel):
+    role: str # 'user', 'assistant', 'system'
+    content: str
+
+class AIChatRequest(BaseModel):
+    messages: List[ChatMessage]
+    current_product_id: Optional[int] = None
+
+class AISuggestedProduct(BaseModel):
+    id: int
+    name: str
+    price: float
+    original_price: Optional[float] = None
+    category: str
+    image_url: str
+    rating: float
+    origin: Optional[str] = None
+    stock: int
+
+class AIChatResponse(BaseModel):
+    reply: str
+    suggested_products: List[AISuggestedProduct] = []
+    quick_replies: List[str] = []
+
+class AISuggestionsResponse(BaseModel):
+    suggestions: List[str]
+

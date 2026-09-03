@@ -2,6 +2,9 @@ import os
 import uuid
 import datetime
 from typing import List, Optional
+import dotenv
+dotenv.load_dotenv()
+
 from fastapi import FastAPI, Depends, HTTPException, status, Response, Request, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
@@ -12,6 +15,7 @@ from sqlalchemy import or_, desc, asc
 from database import engine, get_db, Base
 import models
 import schemas
+import ai_service
 from auth import (
     hash_password,
     verify_password,
@@ -21,6 +25,7 @@ from auth import (
     get_session_id
 )
 from seed_data import seed_database
+
 
 # Initialize database tables and seed initial data
 Base.metadata.create_all(bind=engine)
@@ -538,6 +543,37 @@ def get_order_by_number(order_number: str, db: Session = Depends(get_db)):
     if not order:
         raise HTTPException(status_code=404, detail="Order not found.")
     return order
+
+# ==========================================
+# AI Assistant (RasAI) Routes (Powered by OpenRouter)
+# ==========================================
+
+@app.post("/api/ai/chat", response_model=schemas.AIChatResponse)
+async def ai_chat_endpoint(
+    request: schemas.AIChatRequest,
+    db: Session = Depends(get_db)
+):
+    """Answers customer queries on juice products, pricing, discounts, health benefits, and recommendations."""
+    messages_payload = [{"role": m.role, "content": m.content} for m in request.messages]
+    result = await ai_service.ask_ai_assistant(
+        messages=messages_payload,
+        db=db,
+        current_product_id=request.current_product_id
+    )
+    return result
+
+@app.get("/api/ai/suggestions", response_model=schemas.AISuggestionsResponse)
+def get_ai_suggestions():
+    """Provides prompt starters for the AI Concierge."""
+    return {
+        "suggestions": [
+            "🍹 What are your cheapest juices under ₹150?",
+            "🛡️ Which cold-pressed juices boost immunity?",
+            "🏷️ What active discount coupons can I use?",
+            "🍏 Tell me about Kashmiri Apple Juice ingredients & pricing",
+            "⚡ How do I pay via Google Pay UPI or RuPay?"
+        ]
+    }
 
 # ==========================================
 # HTML PAGE ROUTES

@@ -149,6 +149,48 @@
     </div>
   </div>
 
+  <!-- Floating AI Assistant Launcher Button -->
+  <button class="ai-launcher-btn" id="ai-launcher-btn" onclick="toggleAIChat()" title="Ask RasAI Assistant">
+    <span class="ai-launcher-icon">✨</span>
+    <span class="ai-launcher-text">Ask RasAI</span>
+    <span class="ai-pulse-dot"></span>
+  </button>
+
+  <!-- AI Assistant Chat Drawer Widget -->
+  <div class="ai-chat-drawer" id="ai-chat-drawer">
+    <div class="ai-chat-header">
+      <div class="ai-header-left">
+        <div class="ai-avatar-badge">✨</div>
+        <div>
+          <div class="ai-header-title">RasAI Concierge</div>
+          <div class="ai-header-subtitle"><span class="online-indicator"></span> Live Product & Pricing Expert</div>
+        </div>
+      </div>
+      <div class="ai-header-actions">
+        <button class="ai-btn-icon" onclick="clearAIChat()" title="Clear Chat">🔄</button>
+        <button class="ai-btn-icon" onclick="toggleAIChat()" title="Close">&times;</button>
+      </div>
+    </div>
+
+    <!-- Quick Prompt Suggestions Chips -->
+    <div class="ai-quick-chips" id="ai-quick-chips">
+      <!-- Populated dynamically by app.js -->
+    </div>
+
+    <!-- Messages Container -->
+    <div class="ai-messages-container" id="ai-messages-container">
+      <!-- Populated dynamically by app.js -->
+    </div>
+
+    <!-- Input Bar -->
+    <div class="ai-input-bar">
+      <textarea id="ai-chat-input" placeholder="Ask about juice pricing, ingredients, discounts..." rows="1" onkeydown="handleAIInputKey(event)"></textarea>
+      <button class="ai-send-btn" id="ai-send-btn" onclick="sendAIChatMessage()" title="Send">
+        <span>🚀</span>
+      </button>
+    </div>
+  </div>
+
   <!-- Toast Notification Container -->
   <div class="toast-container" id="toast-container"></div>
 
@@ -156,3 +198,4 @@
   <script src="/static/js/app.js"></script>
 </body>
 </html>
+

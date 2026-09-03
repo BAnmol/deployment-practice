@@ -1837,3 +1837,209 @@ function closeModal(backdropId) {
   const el = document.getElementById(backdropId);
   if (el) el.classList.remove('active');
 }
+
+// ==========================================
+// RasAI AI Assistant Chat Controller
+// ==========================================
+
+let aiChatOpen = false;
+let aiMessages = [];
+
+async function toggleAIChat() {
+  const drawer = document.getElementById('ai-chat-drawer');
+  if (!drawer) return;
+
+  aiChatOpen = !aiChatOpen;
+  if (aiChatOpen) {
+    drawer.classList.add('active');
+    if (aiMessages.length === 0) {
+      initAIChat();
+    }
+    setTimeout(() => {
+      const input = document.getElementById('ai-chat-input');
+      if (input) input.focus();
+    }, 200);
+  } else {
+    drawer.classList.remove('active');
+  }
+}
+
+async function initAIChat() {
+  const container = document.getElementById('ai-messages-container');
+  if (!container) return;
+
+  // Render initial greeting
+  const welcomeMsg = {
+    role: 'assistant',
+    content: "Namaste! 🙏 I am **RasAI**, your live Indian Juice Specialist & Pricing Concierge.\n\nAsk me about:\n• **Juice Pricing & Best Value Deals** (e.g., drinks under ₹150)\n• **Ingredients & Farm Origins** (Kashmir, Ratnagiri, Wayanad)\n• **Active Promo Coupons** for checkout (`DESI10`, `INDIA50`)"
+  };
+  aiMessages = [welcomeMsg];
+  renderAIMessagesList();
+  fetchAISuggestions();
+}
+
+async function fetchAISuggestions() {
+  const chipsContainer = document.getElementById('ai-quick-chips');
+  if (!chipsContainer) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/ai/suggestions`);
+    if (res.ok) {
+      const data = await res.json();
+      chipsContainer.innerHTML = data.suggestions.map(s => `
+        <button class="ai-chip-btn" onclick="selectAIChip('${s.replace(/'/g, "\\'")}')">${s}</button>
+      `).join('');
+    }
+  } catch (err) {
+    console.error("Failed to load AI suggestions", err);
+  }
+}
+
+function selectAIChip(promptText) {
+  const cleanPrompt = promptText.replace(/^[^\w\s]+/, '').trim();
+  const input = document.getElementById('ai-chat-input');
+  if (input) {
+    input.value = cleanPrompt;
+    sendAIChatMessage();
+  }
+}
+
+function handleAIInputKey(event) {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    sendAIChatMessage();
+  }
+}
+
+function formatAIMarkdown(text) {
+  if (!text) return '';
+  // Basic markdown parser for bold, code, bullet points
+  let html = text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/`(.*?)`/g, '<code>$1</code>')
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n\* /g, '<br>• ')
+    .replace(/\n- /g, '<br>• ')
+    .replace(/\n/g, '<br>');
+  return html;
+}
+
+function renderAIMessagesList() {
+  const container = document.getElementById('ai-messages-container');
+  if (!container) return;
+
+  container.innerHTML = aiMessages.map((m, idx) => {
+    const isUser = m.role === 'user';
+    const avatar = isUser ? '👤' : '✨';
+    const formattedText = isUser ? m.content : formatAIMarkdown(m.content);
+
+    let productCardsHtml = '';
+    if (m.suggested_products && m.suggested_products.length > 0) {
+      productCardsHtml = m.suggested_products.map(p => `
+        <div class="ai-product-card-mini">
+          <div class="ai-prod-left">
+            <div class="ai-prod-img">
+              <img src="${p.image_url}" alt="${p.name}">
+            </div>
+            <div>
+              <div class="ai-prod-name">${p.name}</div>
+              <div class="ai-prod-price">₹${p.price.toFixed(0)} <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">• ${p.category}</span></div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.3rem;">
+            <button class="ai-prod-btn" onclick="openProductDetail(${p.id})">🔍 View</button>
+            <button class="ai-prod-btn" style="background: #ff9800; color: #000;" onclick="addToBasket(${p.id}, 1); showToast('Added ${p.name} to basket!', 'success');">🛒 Add</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    return `
+      <div class="ai-msg-row ${isUser ? 'user' : 'assistant'}">
+        <div class="ai-msg-avatar">${avatar}</div>
+        <div class="ai-msg-bubble">
+          <div>${formattedText}</div>
+          ${productCardsHtml}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.scrollTop = container.scrollHeight;
+}
+
+async function sendAIChatMessage() {
+  const input = document.getElementById('ai-chat-input');
+  if (!input) return;
+
+  const text = input.value.trim();
+  if (!text) return;
+
+  // Add user message
+  aiMessages.push({ role: 'user', content: text });
+  input.value = '';
+  renderAIMessagesList();
+
+  // Show typing indicator
+  const container = document.getElementById('ai-messages-container');
+  const typingIndicator = document.createElement('div');
+  typingIndicator.className = 'ai-msg-row assistant';
+  typingIndicator.id = 'ai-typing-temp';
+  typingIndicator.innerHTML = `
+    <div class="ai-msg-avatar">✨</div>
+    <div class="ai-msg-bubble ai-typing-indicator">
+      <div class="ai-typing-dot"></div>
+      <div class="ai-typing-dot"></div>
+      <div class="ai-typing-dot"></div>
+    </div>
+  `;
+  container.appendChild(typingIndicator);
+  container.scrollTop = container.scrollHeight;
+
+  try {
+    const currentProdId = state.selectedProduct ? state.selectedProduct.id : null;
+    const res = await fetch(`${API_BASE}/ai/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: aiMessages.map(m => ({ role: m.role, content: m.content })),
+        current_product_id: currentProdId
+      })
+    });
+
+    // Remove typing indicator
+    const tempEl = document.getElementById('ai-typing-temp');
+    if (tempEl) tempEl.remove();
+
+    if (res.ok) {
+      const data = await res.json();
+      aiMessages.push({
+        role: 'assistant',
+        content: data.reply,
+        suggested_products: data.suggested_products || []
+      });
+      renderAIMessagesList();
+    } else {
+      aiMessages.push({
+        role: 'assistant',
+        content: "Namaste! Our Indian juice catalog is currently available. You can ask about our cold-pressed prices, active promo coupons (`DESI10`), or pure ingredients!"
+      });
+      renderAIMessagesList();
+    }
+  } catch (err) {
+    const tempEl = document.getElementById('ai-typing-temp');
+    if (tempEl) tempEl.remove();
+
+    aiMessages.push({
+      role: 'assistant',
+      content: "Namaste! For immediate answers:\n• Cheapest juices: **Desi Shikanji (₹99)** & **Kerala Banana (₹129)**\n• Active discount coupon: **`DESI10`** for 10% OFF\n• 100% cold-pressed with zero preservatives!"
+    });
+    renderAIMessagesList();
+  }
+}
+
+function clearAIChat() {
+  aiMessages = [];
+  initAIChat();
+}
+
