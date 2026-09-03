@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="basilGreen" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#43A047"/>
+      <stop offset="100%" stop-color="#2E7D32"/>
+    </linearGradient>
+    <linearGradient id="gingerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D7CCC8"/>
+      <stop offset="100%" stop-color="#BCAAA4"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" fill="#F4FBFB" rx="8"/>
+  <path d="M110 18 L130 70 L130 145" fill="none" stroke="#263238" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <ellipse cx="100" cy="65" rx="44" ry="9" fill="#E0F7FA" stroke="#263238" stroke-width="3.5"/>
+  <path d="M64 67 L73 158 C74 162 77 165 81 165 L119 165 C123 165 126 162 127 158 L136 67 Z" fill="#E1F5FE" stroke="#263238" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M69 90 L75 156 C76 159 78 161 81 161 L119 161 C122 161 124 159 125 156 L131 90 Z" fill="url(#basilGreen)"/>
+  <!-- Basil Leaves -->
+  <g transform="translate(85, 75)">
+    <path d="M40 40 C60 20 65 5 45 0 C25 -5 20 20 40 40 Z" fill="#2E7D32" stroke="#1B5E20" stroke-width="2.5"/>
+    <path d="M40 40 C20 25 15 10 30 5 C45 0 50 25 40 40 Z" fill="#388E3C" stroke="#1B5E20" stroke-width="2.5"/>
+    <path d="M38 35 Q45 20 45 5" stroke="#81C784" stroke-width="1.5" fill="none"/>
+  </g>
+  <!-- Ginger Root -->
+  <g transform="translate(115, 115)">
+    <path d="M15 25 C10 15 20 5 30 10 C35 12 40 5 50 12 C60 20 55 35 45 40 C35 45 18 35 15 25 Z" fill="url(#gingerGrad)" stroke="#263238" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M22 22 Q28 25 32 20" stroke="#8D6E63" stroke-width="1.5" fill="none"/>
+    <path d="M35 30 Q40 32 44 26" stroke="#8D6E63" stroke-width="1.5" fill="none"/>
+  </g>
+</svg>

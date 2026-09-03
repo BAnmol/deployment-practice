@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bananaJuice" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFF9C4"/>
+      <stop offset="100%" stop-color="#FFF176"/>
+    </linearGradient>
+    <linearGradient id="bananaSkin" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFEE58"/>
+      <stop offset="100%" stop-color="#FDD835"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" fill="#F4FBFB" rx="8"/>
+  <path d="M85 22 L105 70 L105 145" fill="none" stroke="#263238" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <ellipse cx="80" cy="65" rx="40" ry="8" fill="#E0F7FA" stroke="#263238" stroke-width="3.5"/>
+  <path d="M48 67 L57 158 C58 162 61 165 65 165 L95 165 C99 165 102 162 103 158 L112 67 Z" fill="#E1F5FE" stroke="#263238" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M52 95 L59 156 C60 159 62 161 65 161 L95 161 C98 161 100 159 101 156 L108 95 Z" fill="url(#bananaJuice)"/>
+  <!-- Peeled Banana -->
+  <g transform="translate(85, 30)">
+    <path d="M55 25 C62 55 60 105 35 135 C38 120 40 85 30 50 Z" fill="#FBC02D" stroke="#263238" stroke-width="3"/>
+    <path d="M22 45 C35 55 45 80 40 120 C32 122 25 110 20 90 C15 70 18 55 22 45 Z" fill="#FFFDE7" stroke="#263238" stroke-width="3.5" stroke-linejoin="round"/>
+    <path d="M22 65 C12 85 5 110 10 135 C18 120 25 100 28 85 Z" fill="url(#bananaSkin)" stroke="#263238" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M40 75 C55 90 65 125 58 140 C50 125 45 105 38 95 Z" fill="url(#bananaSkin)" stroke="#263238" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M35 135 C37 145 35 150 33 152" stroke="#5D4037" stroke-width="4" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - OWASP Juice Shop</title>
+  <link rel="icon" type="image/svg+xml" href="/static/images/logo.svg">
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-left">
+      <a href="/" class="brand-link">
+        <img src="/static/images/logo.svg" alt="OWASP Juice Shop Logo" class="brand-logo">
+        <span class="brand-title">OWASP Juice Shop</span>
+      </a>
+    </div>
+    <div class="nav-right">
+      <a href="/" class="nav-btn">
+        <span>🍹</span>
+        <span>Back to Store</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Auth Container -->
+  <main class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <img src="/static/images/logo.svg" width="55" height="55" alt="Logo" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">
+        <h2 style="color: #fff; margin-top: 0.5rem; font-size: 1.35rem;" id="auth-title">Customer Login</h2>
+        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.2rem;">Sign in to your fresh juice account</p>
+      </div>
+
+      <!-- Tab Switcher -->
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" id="tab-login-btn" onclick="switchAuthTab('login')">Login</button>
+        <button class="auth-tab-btn" id="tab-register-btn" onclick="switchAuthTab('register')">Register</button>
+      </div>
+
+      <div class="auth-body">
+        <!-- Login Form -->
+        <form id="form-login" onsubmit="handleLoginForm(event)">
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="login-email" class="form-control" placeholder="user@juice-sh.op" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="btn-primary" id="btn-submit-login">
+            <span>🔑</span> Sign In
+          </button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="form-register" style="display: none;" onsubmit="handleRegisterForm(event)">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="reg-name" class="form-control" placeholder="Sarah Squeezer" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="reg-email" class="form-control" placeholder="newuser@example.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" id="reg-password" class="form-control" placeholder="Minimum 4 characters" minlength="4" required>
+          </div>
+          <button type="submit" class="btn-primary" id="btn-submit-reg">
+            <span>📝</span> Create My Account
+          </button>
+        </form>
+
+        <!-- Quick 1-Click Demo Accounts (India) -->
+        <div class="demo-account-box">
+          <div style="font-weight: 600; color: var(--accent-orange); display: flex; align-items: center; gap: 0.3rem;">
+            <span>⚡</span> 1-Click Demo Logins (India)
+          </div>
+          <p style="color: var(--text-muted); margin-top: 0.2rem; font-size: 0.78rem;">
+            Click below to instantly populate credentials and sign in:
+          </p>
+          <div class="demo-btn-row" style="grid-template-columns: 1fr 1fr 1fr;">
+            <button class="demo-quick-btn" onclick="fillAndLogin('customer@juice-sh.op', 'juice123')">
+              🍹 Aarav (Mumbai)
+            </button>
+            <button class="demo-quick-btn" onclick="fillAndLogin('priya@juice-sh.op', 'juice123')">
+              🌸 Priya (Gujarat)
+            </button>
+            <button class="demo-quick-btn" onclick="fillAndLogin('admin@juice-sh.op', 'admin123')">
+              👑 Admin (Rajesh)
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
+    function showToast(message, type = 'info') {
+      let container = document.getElementById('toast-container');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+      }
+
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      let icon = type === 'success' ? '✅' : (type === 'error' ? '❌' : 'ℹ️');
+      toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(60px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    function switchAuthTab(tab) {
+      const loginForm = document.getElementById('form-login');
+      const regForm = document.getElementById('form-register');
+      const loginTabBtn = document.getElementById('tab-login-btn');
+      const regTabBtn = document.getElementById('tab-register-btn');
+      const authTitle = document.getElementById('auth-title');
+
+      if (tab === 'login') {
+        loginForm.style.display = 'block';
+        regForm.style.display = 'none';
+        loginTabBtn.classList.add('active');
+        regTabBtn.classList.remove('active');
+        authTitle.textContent = 'Customer Login';
+      } else {
+        loginForm.style.display = 'none';
+        regForm.style.display = 'block';
+        loginTabBtn.classList.remove('active');
+        regTabBtn.classList.add('active');
+        authTitle.textContent = 'Create New Account';
+      }
+    }
+
+    // Check URL parameters for tab
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('tab') === 'register') {
+      switchAuthTab('register');
+    }
+
+    async function handleLoginForm(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const btn = document.getElementById('btn-submit-login');
+
+      btn.disabled = true;
+      btn.innerHTML = 'Signing in...';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          localStorage.setItem('access_token', data.access_token);
+          showToast(`Welcome back, ${data.user.full_name}! Redirecting...`, 'success');
+          setTimeout(() => window.location.href = '/', 1000);
+        } else {
+          showToast(data.detail || 'Login failed. Check your credentials.', 'error');
+          btn.disabled = false;
+          btn.innerHTML = '<span>🔑</span> Sign In';
+        }
+      } catch (err) {
+        showToast('Server connection error', 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<span>🔑</span> Sign In';
+      }
+    }
+
+    async function handleRegisterForm(e) {
+      e.preventDefault();
+      const full_name = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const btn = document.getElementById('btn-submit-reg');
+
+      btn.disabled = true;
+      btn.innerHTML = 'Creating account...';
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ full_name, email, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          localStorage.setItem('access_token', data.access_token);
+          showToast('Account created successfully! Redirecting...', 'success');
+          setTimeout(() => window.location.href = '/', 1000);
+        } else {
+          showToast(data.detail || 'Registration failed.', 'error');
+          btn.disabled = false;
+          btn.innerHTML = '<span>📝</span> Create My Account';
+        }
+      } catch (err) {
+        showToast('Server connection error', 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<span>📝</span> Create My Account';
+      }
+    }
+
+    function fillAndLogin(email, password) {
+      switchAuthTab('login');
+      document.getElementById('login-email').value = email;
+      document.getElementById('login-password').value = password;
+      document.getElementById('form-login').dispatchEvent(new Event('submit'));
+    }
+  </script>
+</body>
+</html>

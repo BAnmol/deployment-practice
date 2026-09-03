@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="pomaceTop" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF8E1"/>
+      <stop offset="100%" stop-color="#FFE082"/>
+    </linearGradient>
+    <linearGradient id="pomaceSide" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E0E0E0"/>
+      <stop offset="100%" stop-color="#BDBDBD"/>
+    </linearGradient>
+    <radialGradient id="appleG" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#FF5252"/>
+      <stop offset="80%" stop-color="#C62828"/>
+    </radialGradient>
+  </defs>
+  <rect width="200" height="200" fill="#F4FBFB" rx="8"/>
+  <!-- Pomace Base -->
+  <ellipse cx="95" cy="125" rx="60" ry="22" fill="#CFD8DC" opacity="0.6"/>
+  <path d="M35 100 L35 125 C35 138 155 138 155 125 L155 100 Z" fill="url(#pomaceSide)" stroke="#263238" stroke-width="3.5"/>
+  <ellipse cx="95" cy="100" rx="60" ry="22" fill="url(#pomaceTop)" stroke="#263238" stroke-width="3.5"/>
+  <circle cx="75" cy="98" r="1.8" fill="#BCAAA4"/>
+  <circle cx="110" cy="95" r="2" fill="#BCAAA4"/>
+  <circle cx="90" cy="108" r="1.5" fill="#BCAAA4"/>
+  <circle cx="130" cy="104" r="1.8" fill="#BCAAA4"/>
+  <!-- Two Apples in front -->
+  <g transform="translate(100, 105)">
+    <path d="M22 6 Q20 -1 16 0" fill="none" stroke="#5D4037" stroke-width="2" stroke-linecap="round"/>
+    <path d="M22 8 C30 5 40 14 39 28 C38 39 29 44 21 43 C13 44 4 39 3 28 C2 14 12 5 22 8 Z" fill="url(#appleG)" stroke="#263238" stroke-width="2.8"/>
+    <ellipse cx="12" cy="18" rx="3" ry="5" fill="#FFFFFF" opacity="0.6"/>
+  </g>
+  <g transform="translate(125, 115)">
+    <path d="M20 5 Q18 -2 14 -1" fill="none" stroke="#5D4037" stroke-width="2" stroke-linecap="round"/>
+    <path d="M20 7 C28 4 37 12 36 25 C35 35 27 40 19 39 C11 40 3 35 2 25 C1 12 10 4 20 7 Z" fill="url(#appleG)" stroke="#263238" stroke-width="2.8"/>
+    <ellipse cx="11" cy="16" rx="2.5" ry="4.5" fill="#FFFFFF" opacity="0.6"/>
+  </g>
+</svg>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="lemonGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFF59D"/>
+      <stop offset="100%" stop-color="#FDD835"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" fill="#F4FBFB" rx="8"/>
+  <path d="M110 18 L130 70 L130 145" fill="none" stroke="#263238" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <ellipse cx="100" cy="65" rx="44" ry="9" fill="#E0F7FA" stroke="#263238" stroke-width="3.5"/>
+  <path d="M64 67 L73 158 C74 162 77 165 81 165 L119 165 C123 165 126 162 127 158 L136 67 Z" fill="#E1F5FE" stroke="#263238" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M69 90 L75 156 C76 159 78 161 81 161 L119 161 C122 161 124 159 125 156 L131 90 Z" fill="url(#lemonGrad)"/>
+  <!-- Fresh Lemon -->
+  <g transform="translate(110, 115)">
+    <path d="M15 10 C25 2 45 5 55 20 C65 35 55 55 40 60 C25 65 5 55 5 40 C5 25 5 18 15 10 Z" fill="#FFEE58" stroke="#263238" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M15 10 C18 0 8 -5 0 2 C-2 8 8 12 15 10 Z" fill="#4CAF50" stroke="#2E7D32" stroke-width="1.5"/>
+  </g>
+</svg>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="juiceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF9800"/>
+      <stop offset="50%" stop-color="#F57C00"/>
+      <stop offset="100%" stop-color="#E65100"/>
+    </linearGradient>
+  </defs>
+  <!-- Straw -->
+  <path d="M58 8 L66 18 L76 16 L74 12 L67 13 L60 5 Z" fill="#E53935" stroke="#B71C1C" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Juice Carton 3D Body -->
+  <path d="M22 35 L48 44 L48 88 L22 75 Z" fill="#FB8C00" stroke="#212121" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M48 44 L78 35 L78 75 L48 88 Z" fill="#F57C00" stroke="#212121" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Gable Top -->
+  <path d="M22 35 L48 44 L48 24 L22 18 Z" fill="#FFA726" stroke="#212121" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M48 44 L78 35 L78 18 L48 24 Z" fill="#FFB74D" stroke="#212121" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M22 18 L48 24 L78 18 L48 14 Z" fill="#FFE082" stroke="#212121" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- JS Text -->
+  <text x="30" y="68" font-family="Impact, Arial Black, sans-serif" font-size="24" font-weight="900" fill="#FFFFFF" stroke="#D84315" stroke-width="1">JS</text>
+  <circle cx="72" cy="62" r="3.5" fill="#FFD54F" stroke="#E65100" stroke-width="1"/>
+  <circle cx="75" cy="70" r="2" fill="#FFD54F" stroke="#E65100" stroke-width="0.8"/>
+</svg>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="dragonJuice" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFB74D"/>
+      <stop offset="100%" stop-color="#FB8C00"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" fill="#F4FBFB" rx="8"/>
+  <path d="M110 18 L130 70 L130 145" fill="none" stroke="#263238" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <ellipse cx="100" cy="65" rx="44" ry="9" fill="#E0F7FA" stroke="#263238" stroke-width="3.5"/>
+  <path d="M64 67 L73 158 C74 162 77 165 81 165 L119 165 C123 165 126 162 127 158 L136 67 Z" fill="#E1F5FE" stroke="#263238" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M69 90 L75 156 C76 159 78 161 81 161 L119 161 C122 161 124 159 125 156 L131 90 Z" fill="url(#dragonJuice)"/>
+  <!-- Dragon Fruit Slice -->
+  <g transform="translate(115, 95)">
+    <path d="M30 5 C45 -10 60 15 50 30 C65 25 70 50 55 60 C65 75 40 85 30 75 C15 85 -5 70 5 50 C-10 40 5 15 20 20 Z" fill="#D81B60" stroke="#880E4F" stroke-width="3" stroke-linejoin="round"/>
+    <ellipse cx="32" cy="44" rx="22" ry="26" fill="#FFFFFF" stroke="#263238" stroke-width="2.5"/>
+    <circle cx="24" cy="35" r="1.5" fill="#212121"/>
+    <circle cx="38" cy="32" r="1.5" fill="#212121"/>
+    <circle cx="32" cy="45" r="1.5" fill="#212121"/>
+    <circle cx="22" cy="52" r="1.5" fill="#212121"/>
+  </g>
+</svg>
