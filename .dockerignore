@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+.venv/
+venv/
+ENV/
+.pytest_cache/
+.DS_Store
+.git/
+.gitignore
+chroma_data/
+chroma_db_store/
+shop.db
