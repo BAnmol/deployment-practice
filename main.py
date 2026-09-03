@@ -16,6 +16,7 @@ from database import engine, get_db, Base
 import models
 import schemas
 import ai_service
+import rag_service
 from auth import (
     hash_password,
     verify_password,
@@ -31,11 +32,19 @@ from seed_data import seed_database
 Base.metadata.create_all(bind=engine)
 seed_database()
 
+# Automatically index catalog to ChromaDB vector database
+try:
+    with Session(engine) as init_db:
+        rag_service.index_catalog_to_chroma(init_db)
+except Exception as e:
+    print(f"ChromaDB startup indexing note: {e}")
+
 app = FastAPI(
     title="OWASP Juice Shop API",
     description="Full-featured e-commerce API for Juice Shop with Dummy Payment Portal and Auth",
     version="1.0.0"
 )
+
 
 # Enable CORS
 app.add_middleware(
@@ -574,6 +583,12 @@ def get_ai_suggestions():
             "⚡ How do I pay via Google Pay UPI or RuPay?"
         ]
     }
+
+@app.post("/api/ai/reindex")
+def reindex_chroma_knowledge_base(db: Session = Depends(get_db)):
+    """Re-indexes all products, reviews, and coupons into the ChromaDB vector database."""
+    res = rag_service.index_catalog_to_chroma(db)
+    return res
 
 # ==========================================
 # HTML PAGE ROUTES

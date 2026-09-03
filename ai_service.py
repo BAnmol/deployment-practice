@@ -107,18 +107,34 @@ def extract_recommended_products(
     return recommended
 
 
+import rag_service
+
 async def ask_ai_assistant(
     messages: List[Dict[str, str]],
     db: Session,
     current_product_id: Optional[int] = None,
 ) -> Dict[str, Any]:
-    """Interacts with OpenRouter API with dynamic SQLite catalog grounding."""
+    """Interacts with OpenRouter API using ChromaDB Vector RAG retrieval & SQLite grounding."""
+    latest_query = messages[-1]["content"] if messages else ""
+    all_products = db.query(models.Product).all()
+
+    # 1. Perform RAG vector similarity search in ChromaDB
+    rag_results = rag_service.query_knowledge_base(latest_query, n_results=4)
+    retrieved_chunks = rag_results.get("documents", [])
+    matched_product_ids = rag_results.get("matched_product_ids", [])
+
+    rag_context_text = ""
+    if retrieved_chunks:
+        rag_context_text = "\n=== CHROMADB VECTOR RAG RETRIEVED KNOWLEDGE CHUNKS ===\n" + "\n---\n".join(retrieved_chunks)
+
+    # 2. Build live catalog overview
     catalog_text = build_catalog_context(db)
     system_prompt = get_system_prompt(catalog_text)
 
-    all_products = db.query(models.Product).all()
+    if rag_context_text:
+        system_prompt += f"\n{rag_context_text}\n"
 
-    # If current_product_id is supplied, prepend context
+    # 3. Assemble augmented conversation messages
     augmented_messages = [{"role": "system", "content": system_prompt}]
 
     if current_product_id:
@@ -158,6 +174,7 @@ async def ask_ai_assistant(
         "temperature": 0.7,
         "max_tokens": 800,
     }
+
 
     try:
         async with httpx.AsyncClient(timeout=25.0) as client:
