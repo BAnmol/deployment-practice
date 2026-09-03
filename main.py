@@ -28,22 +28,32 @@ from auth import (
 from seed_data import seed_database
 
 
-# Initialize database tables and seed initial data
-Base.metadata.create_all(bind=engine)
-seed_database()
+import threading
+from contextlib import asynccontextmanager
 
-# Automatically index catalog to ChromaDB vector database
-try:
-    with Session(engine) as init_db:
-        rag_service.index_catalog_to_chroma(init_db)
-except Exception as e:
-    print(f"ChromaDB startup indexing note: {e}")
+def async_reindex_catalog():
+    try:
+        with Session(engine) as init_db:
+            rag_service.index_catalog_to_chroma(init_db)
+    except Exception as e:
+        print(f"ChromaDB startup indexing note: {e}")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Initialize database tables and seed initial data
+    Base.metadata.create_all(bind=engine)
+    seed_database()
+    # Index catalog into ChromaDB in background thread
+    threading.Thread(target=async_reindex_catalog, daemon=True).start()
+    yield
 
 app = FastAPI(
     title="OWASP Juice Shop API",
     description="Full-featured e-commerce API for Juice Shop with Dummy Payment Portal and Auth",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
+
 
 
 # Enable CORS

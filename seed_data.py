@@ -254,9 +254,10 @@ def seed_database(force_reseed=False):
 
         created_products = []
         for p in products_data:
-            prod = models.Product(p)
+            prod = models.Product(**p)
             db.add(prod)
             created_products.append(prod)
+
 
         db.flush()
 
