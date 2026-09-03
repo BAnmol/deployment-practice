@@ -25,24 +25,28 @@ def get_chroma_client():
     import chromadb
     from chromadb.config import Settings
 
-    # 1. Attempt connection to Dockerized ChromaDB instance
-    try:
-        logger.info(f"Connecting to ChromaDB in Docker on {CHROMA_HOST}:{CHROMA_PORT}...")
-        client = chromadb.HttpClient(
-            host=CHROMA_HOST,
-            port=CHROMA_PORT,
-            settings=Settings(anonymized_telemetry=False)
-        )
-        # Verify heartbeat
-        client.heartbeat()
-        logger.info("Successfully connected to Dockerized ChromaDB server!")
-        _chroma_client = client
-        return _chroma_client
-    except Exception as e:
-        logger.warning(
-            f"Could not connect to Dockerized ChromaDB at {CHROMA_HOST}:{CHROMA_PORT} ({e}). "
-            f"Using local persistent ChromaDB storage as fallback."
-        )
+    import time
+    # 1. Attempt connection to Dockerized ChromaDB instance with retries
+    for attempt in range(1, 6):
+        try:
+            logger.info(f"Connecting to ChromaDB on {CHROMA_HOST}:{CHROMA_PORT} (attempt {attempt}/5)...")
+            client = chromadb.HttpClient(
+                host=CHROMA_HOST,
+                port=CHROMA_PORT,
+                settings=Settings(anonymized_telemetry=False)
+            )
+            client.heartbeat()
+            logger.info(f"Successfully connected to ChromaDB server at {CHROMA_HOST}:{CHROMA_PORT}!")
+            _chroma_client = client
+            return _chroma_client
+        except Exception as e:
+            if attempt < 5:
+                time.sleep(1)
+            else:
+                logger.warning(
+                    f"Could not connect to ChromaDB at {CHROMA_HOST}:{CHROMA_PORT} after 5 attempts ({e}). "
+                    f"Using local persistent ChromaDB storage as fallback."
+                )
 
     # 2. Fallback to Local Persistent Storage
     try:
